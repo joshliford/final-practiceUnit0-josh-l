@@ -1,14 +1,42 @@
 // Twin Baby Application
 const input = require('readline-sync');
 
-function logFeedingActivity(amount, method, time) {
+let taskList = [];
+
+function logBottleActivity(amount, time) {
+    let measurement;
     if (amount < 0) {
         throw new Error("Please enter a valid amount.");
+    } else if (amount === 1) {
+        measurement = "ounce";
+    } else {
+        measurement = "ounces";
     }
 
-    let feedingActivity = `${babyName} had ${amount} ounces to eat via ${method} at ${time}.`;
-    console.log(feedingActivity);
-    return feedingActivity;
+    let bottleFeedingActivity = `${babyName} had ${amount} ${measurement} to eat via bottle at ${time}.`;
+    console.log(bottleFeedingActivity);
+
+    taskList.push(bottleFeedingActivity);
+
+    return bottleFeedingActivity;
+}
+
+function logBreastActivity(side, amountOfTime, time) {
+    let timeUnit;
+    if (amountOfTime < 0) {
+        throw new Error("Please enter a valid amount of time.");
+    } else if (amountOfTime === 1) {
+        timeUnit = "minute";
+    } else {
+        timeUnit = "minutes";
+    }
+
+    let breastFeedingActivity = `${babyName} spent ${amountOfTime} ${timeUnit} feeding on the ${side} breast at ${time}.`;
+    console.log(breastFeedingActivity);
+
+    taskList.push(breastFeedingActivity);
+
+    return breastFeedingActivity;
 }
 
 function checkFeedStatus(hoursAgo) {
@@ -23,8 +51,12 @@ function checkFeedStatus(hoursAgo) {
 
 function displayTodaysTasks(taskList) {
     console.log("Today's Tasks:");
-    for (let i = 0; i < taskList.length; i++) {
-        console.log((i+1) + ". " + taskList[i]);
+    if (taskList.length === 0) {
+        console.log("No Tasks Logged Today.");
+    } else {
+        for (let i = 0; i < taskList.length; i++) {
+            console.log((i+1) + ". " + taskList[i]);
+        }
     }
 }
 
@@ -58,15 +90,27 @@ while (true) {
 
     } else if (action === "1") {
         try {
-            let amount = Number(input.question(`How many ounces did ${babyName} eat? `));
-            let method = input.question("What feeding method was used? (bottle or breast)? ")
-            let time = input.question("What time was the feed? (Please enter in HH:MMam/pm format) ");
+            let feedType = input.question("Was baby fed via 'breast' or 'bottle'? ");
+            if (feedType.toLowerCase() === "breast") {
+                let breastSide = input.question(`Which breast was used to feed ${babyName}? (left or right): `).toLowerCase();
+                let feedLength = Number(input.question(`How long did ${babyName} feed on the ${breastSide} breast? (in minutes): `));
+                let time = input.question("What time was the feed? (Please enter in HH:MM am/pm format) ");
 
-            logFeedingActivity(amount, method, time);
+                logBreastActivity(breastSide, feedLength, time);
 
-        } catch (error) {
-            console.log(error.message);
-        }
+            } else if (feedType.toLowerCase() === "bottle") {
+                let amount = Number(input.question(`How many ounces did ${babyName} eat? `));
+                let time = input.question("What time was the feed? (Please enter in HH:MM am/pm format) ");
+
+                logBottleActivity(amount, time);
+
+            } else {
+                console.log("Please enter 'breast' or 'bottle'.");
+            }
+
+            } catch (error) {
+                console.log(error.message);
+            }
    
     } else if (action === "2") {
         try {
@@ -77,14 +121,14 @@ while (true) {
         } catch (error) {
             console.log(error.message);
         }
+
+    } else if (action === "3") {
+        displayTodaysTasks(taskList);
+
+    } else {
+        console.log("Invalid action:\n1. Log a Feed\n2. Check Feed Status\n3. Check Today's Tasks\n4. Exit Program\n");
     }
 }
-
-
-
-
-
-
 
 
 // *----------------------------------------------------------------------------------------------------------------------------*
