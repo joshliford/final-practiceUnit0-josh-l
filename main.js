@@ -73,6 +73,7 @@ function formatBabyName(inputName) {
 console.log("Welcome to the Baby Tracking App!\nLet's start by getting your baby's name.");
 
 let babyName;
+while (!babyName)
         try {
         babyName = input.question("Please enter your baby's name: ");
         babyName = formatBabyName(babyName);
