@@ -3,6 +3,15 @@ const input = require('readline-sync');
 
 let taskList = [];
 
+function formatBabyName(inputName) {
+    if (!inputName || typeof inputName !== 'string') {
+        throw new Error("Error: Please enter a valid name.");
+    }
+
+    let capitalizedName = inputName.charAt(0).toUpperCase() + inputName.slice(1).toLowerCase();
+    return capitalizedName;
+}
+
 function logBottleActivity(amount, time) {
     let measurement;
     if (amount < 0) {
@@ -13,7 +22,7 @@ function logBottleActivity(amount, time) {
         measurement = "ounces";
     }
 
-    let bottleFeedingActivity = `${babyName} had ${amount} ${measurement} to eat via bottle at ${time}.`;
+    let bottleFeedingActivity = `${babyName} had ${amount} ${measurement} to eat via bottle at ${time}.\n`;
     console.log(bottleFeedingActivity);
 
     taskList.push(bottleFeedingActivity);
@@ -24,14 +33,14 @@ function logBottleActivity(amount, time) {
 function logBreastActivity(side, amountOfTime, time) {
     let timeUnit;
     if (amountOfTime < 0) {
-        throw new Error("Please enter a valid amount of time.");
+        throw new Error("Invalid input: Please enter a valid amount of time.");
     } else if (amountOfTime === 1) {
         timeUnit = "minute";
     } else {
         timeUnit = "minutes";
     }
 
-    let breastFeedingActivity = `${babyName} spent ${amountOfTime} ${timeUnit} feeding on the ${side} breast at ${time}.`;
+    let breastFeedingActivity = `${babyName} spent ${amountOfTime} ${timeUnit} feeding on the ${side} breast at ${time}.\n`;
     console.log(breastFeedingActivity);
 
     taskList.push(breastFeedingActivity);
@@ -43,30 +52,21 @@ function checkFeedStatus(hoursAgo) {
     if (hoursAgo < 0) {
         throw new Error("Please enter a valid number (in hours).");
     } else if (hoursAgo > 3) {
-        console.log(`${babyName} may be ready for another feed. Their last feed was ${hoursAgo} hours ago.`);
+        console.log(`${babyName} may be ready for another feed. Their last feed was ${hoursAgo} hours ago.\n`);
     } else {
-        console.log(`${babyName} is doing well with feeds.`);
+        console.log(`${babyName} is doing well with feeds. Their last feed was ${hoursAgo} hours ago.\n`);
     }
 }
 
 function displayTodaysTasks(taskList) {
-    console.log("Today's Tasks:");
+    console.log("Today's Tasks:\n");
     if (taskList.length === 0) {
-        console.log("No Tasks Logged Today.");
+        console.log("No Tasks Logged Today.\n");
     } else {
         for (let i = 0; i < taskList.length; i++) {
             console.log((i+1) + ". " + taskList[i]);
         }
     }
-}
-
-function formatBabyName(inputName) {
-    if (!inputName || typeof inputName !== 'string') {
-        throw new Error("Error: Please enter a valid name.");
-    }
-
-    let capitalizedName = inputName.charAt(0).toUpperCase() + inputName.slice(1).toLowerCase();
-    return capitalizedName;
 }
 
 // Main Program
@@ -115,7 +115,7 @@ while (true) {
    
     } else if (action === "2") {
         try {
-            let hoursSinceLastFeed = Number(input.question(`How many hours ago did ${babyName} eat? `));
+            let hoursSinceLastFeed = Number(input.question(`How many hours ago did ${babyName} last eat? `));
 
             checkFeedStatus(hoursSinceLastFeed);
 
