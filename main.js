@@ -22,7 +22,7 @@ function logBottleActivity(amount, time) {
         measurement = "ounces";
     }
 
-    let bottleFeedingActivity = `${babyName} had ${amount} ${measurement} to eat via bottle at ${time}.\n`;
+    let bottleFeedingActivity = `${babyName} had ${amount} ${measurement} to eat via bottle at ${time}.`;
     console.log(bottleFeedingActivity);
 
     taskList.push(bottleFeedingActivity);
@@ -40,12 +40,35 @@ function logBreastActivity(side, amountOfTime, time) {
         timeUnit = "minutes";
     }
 
-    let breastFeedingActivity = `${babyName} spent ${amountOfTime} ${timeUnit} feeding on the ${side} breast at ${time}.\n`;
+    let breastFeedingActivity = `${babyName} spent ${amountOfTime} ${timeUnit} feeding on the ${side} breast at ${time}.`;
     console.log(breastFeedingActivity);
 
     taskList.push(breastFeedingActivity);
 
     return breastFeedingActivity;
+}
+
+function formatDiaperChange(diaperStatus, diaperAmount) {
+    if (diaperStatus.toLowerCase() === 'both') {
+        diaperStatus = "wet & dirty";
+    }
+
+    if (diaperStatus.toLowerCase() !== 'wet' && diaperStatus.toLowerCase() !== 'dirty' && diaperStatus.toLowerCase() !== 'both') {
+        throw new Error("Please enter a valid response ('wet', 'dirty', or 'both').");
+    }
+
+    if (diaperAmount.toLowerCase() !== 'small' && diaperAmount.toLowerCase() !== 'medium' && diaperAmount.toLowerCase() !== 'large') {
+        throw new Error("Please enter a valid response ('small', 'medium', or 'large').");
+    }
+}
+
+function logDiaperChange(diaperStatus, diaperAmount, time) {
+    let logDiaperChange = `${babyName} had a ${diaperAmount} ${diaperStatus} diaper at ${time}.`;
+    console.log(logDiaperChange);
+
+    taskList.push(logDiaperChange);
+
+    return logDiaperChange;
 }
 
 function checkFeedStatus(hoursAgo) {
@@ -83,15 +106,15 @@ while (!babyName)
     }
 
 while (true) {
-    let action = input.question("Please choose an action (enter the respective number):\n1. Log a Feed\n2. Check Feed Status\n3. Check Today's Tasks\n4. Exit Program\n");
+    let action = input.question("Please choose an action (enter the respective number):\n1. Log a Feed\n2. Log Diaper Change\n3. Check Feed Status\n4. Check Today's Tasks\n5. Exit Program\n");
     
-    if (action === "4") {
+    if (action === "5") {
         console.log("Thank you! Goodbye!");
         break;
 
     } else if (action === "1") {
         try {
-            let feedType = input.question("Was baby fed via 'breast' or 'bottle'? ");
+            let feedType = input.question(`Was ${babyName} fed via 'breast' or 'bottle'? `);
             if (feedType.toLowerCase() === "breast") {
                 let breastSide = input.question(`Which breast was used to feed ${babyName}? (left or right): `).toLowerCase();
                 let feedLength = Number(input.question(`How long did ${babyName} feed on the ${breastSide} breast? (in minutes): `));
@@ -112,8 +135,21 @@ while (true) {
             } catch (error) {
                 console.log(error.message);
             }
-   
+
     } else if (action === "2") {
+        try {
+            let diaperStatus = input.question(`Did ${babyName} have a 'wet' diaper, 'dirty' diaper, or 'both'? `);
+            let diaperAmount = input.question(`Was this a 'small', 'medium', or 'large' diaper? `);
+            let changeTime = input.question(`What time did you change ${babyName}? (Please enter in HH:MM am/pm format) `);
+
+            formatDiaperChange(diaperStatus, diaperAmount);
+            logDiaperChange(diaperStatus, diaperAmount, changeTime);
+
+        } catch (error) {
+            console.log(error.message);
+        }
+   
+    } else if (action === "3") {
         try {
             let hoursSinceLastFeed = Number(input.question(`How many hours ago did ${babyName} last eat? `));
 
@@ -123,11 +159,11 @@ while (true) {
             console.log(error.message);
         }
 
-    } else if (action === "3") {
+    } else if (action === "4") {
         displayTodaysTasks(taskList);
 
     } else {
-        console.log("Invalid action:\n1. Log a Feed\n2. Check Feed Status\n3. Check Today's Tasks\n4. Exit Program\n");
+        console.log("Invalid action:\n1. Log a Feed\n2. Log Diaper Change\n3. Check Feed Status\n4. Check Today's Tasks\n5. Exit Program\n");
     }
 }
 
